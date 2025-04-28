@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parser Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0 auto;
+      padding: 20px;
+      max-width: 800px;
+    }
+    textarea {
+      width: 100%;
+      height: 120px;
+      margin-bottom: 10px;
+      font-family: monospace;
+    }
+    .output {
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      background-color: #f9f9f9;
+      margin-bottom: 20px;
+      min-height: 100px;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    button {
+      padding: 8px 12px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Parser Test</h1>
+  
+  <h2>Input Tokens (JSON format)</h2>
+  <textarea id="tokens-input">[
+  {"type":"KEYWORD","value":"draw"},
+  {"type":"KEYWORD","value":"circle"},
+  {"type":"KEYWORD","value":"at"},
+  {"type":"SYMBOL","value":"("},
+  {"type":"NUMBER","value":"100"},
+  {"type":"SYMBOL","value":","},
+  {"type":"NUMBER","value":"100"},
+  {"type":"SYMBOL","value":")"},
+  {"type":"KEYWORD","value":"radius"},
+  {"type":"NUMBER","value":"50"},
+  {"type":"KEYWORD","value":"color"},
+  {"type":"COLOR","value":"red"}
+]</textarea>
+  <button id="parse-btn">Parse Tokens</button>
+  
+  <h2>Test Examples</h2>
+  <button class="test-btn" data-example="circle">Circle Example</button>
+  <button class="test-btn" data-example="rectangle">Rectangle Example</button>
+  <button class="test-btn" data-example="line">Line Example</button>
+  
+  <h2>Parse Result</h2>
+  <div id="parse-output" class="output"></div>
+  
+  <script src="../parser.js"></script>
+  <script>
+    // Test examples
+    const examples = {
+      circle: [
+        {"type":"KEYWORD","value":"draw"},
+        {"type":"KEYWORD","value":"circle"},
+        {"type":"KEYWORD","value":"at"},
+        {"type":"SYMBOL","value":"("},
+        {"type":"NUMBER","value":"100"},
+        {"type":"SYMBOL","value":","},
+        {"type":"NUMBER","value":"100"},
+        {"type":"SYMBOL","value":")"},
+        {"type":"KEYWORD","value":"radius"},
+        {"type":"NUMBER","value":"50"},
+        {"type":"KEYWORD","value":"color"},
+        {"type":"COLOR","value":"red"}
+      ],
+      rectangle: [
+        {"type":"KEYWORD","value":"draw"},
+        {"type":"KEYWORD","value":"rectangle"},
+        {"type":"KEYWORD","value":"at"},
+        {"type":"SYMBOL","value":"("},
+        {"type":"NUMBER","value":"50"},
+        {"type":"SYMBOL","value":","},
+        {"type":"NUMBER","value":"50"},
+        {"type":"SYMBOL","value":")"},
+        {"type":"KEYWORD","value":"width"},
+        {"type":"NUMBER","value":"100"},
+        {"type":"KEYWORD","value":"height"},
+        {"type":"NUMBER","value":"80"},
+        {"type":"KEYWORD","value":"color"},
+        {"type":"COLOR","value":"blue"}
+      ],
+      line: [
+        {"type":"KEYWORD","value":"draw"},
+        {"type":"KEYWORD","value":"line"},
+        {"type":"KEYWORD","value":"from"},
+        {"type":"SYMBOL","value":"("},
+        {"type":"NUMBER","value":"0"},
+        {"type":"SYMBOL","value":","},
+        {"type":"NUMBER","value":"0"},
+        {"type":"SYMBOL","value":")"},
+        {"type":"KEYWORD","value":"to"},
+        {"type":"SYMBOL","value":"("},
+        {"type":"NUMBER","value":"200"},
+        {"type":"SYMBOL","value":","},
+        {"type":"NUMBER","value":"200"},
+        {"type":"SYMBOL","value":")"},
+        {"type":"KEYWORD","value":"color"},
+        {"type":"COLOR","value":"green"},
+        {"type":"KEYWORD","value":"width"},
+        {"type":"NUMBER","value":"3"}
+      ]
+    };
+    
+    // UI event handling
+    document.addEventListener('DOMContentLoaded', function() {
+      const tokensInput = document.getElementById('tokens-input');
+      const parseBtn = document.getElementById('parse-btn');
+      const parseOutput = document.getElementById('parse-output');
+      const testBtns = document.querySelectorAll('.test-btn');
+      
+      function processInput() {
+        try {
+          // Get tokens from input
+          const tokens = JSON.parse(tokensInput.value);
+          
+          // Parse tokens - assuming your parser.js exports a Parser class
+          const parser = new Parser(tokens);
+          const parseResult = parser.parse();
+          
+          // Display parse result
+          parseOutput.textContent = JSON.stringify(parseResult, null, 2);
+          parseOutput.classList.remove('error');
+        } catch (error) {
+          parseOutput.textContent = `Error: ${error.message}`;
+          parseOutput.classList.add('error');
+        }
+      }
+      
+      parseBtn.addEventListener('click', processInput);
+      
+      testBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const example = this.dataset.example;
+          if (examples[example]) {
+            tokensInput.value = JSON.stringify(examples[example], null, 2);
+            processInput();
+          }
+        });
+      });
+      
+      // Process initial input when page loads
+      processInput();
+    });
+  </script>
+</body>
+</html>

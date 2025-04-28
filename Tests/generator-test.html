@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG Generator Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0 auto;
+      padding: 20px;
+      max-width: 800px;
+    }
+    textarea {
+      width: 100%;
+      height: 120px;
+      margin-bottom: 10px;
+      font-family: monospace;
+    }
+    .output {
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      background-color: #f9f9f9;
+      margin-bottom: 20px;
+      min-height: 100px;
+    }
+    .svg-output {
+      border: 1px solid #ccc;
+      padding: 10px;
+      background-color: white;
+      margin-bottom: 20px;
+      min-height: 300px;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    button {
+      padding: 8px 12px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>SVG Generator Test</h1>
+  
+  <h2>Parser Output (JSON format)</h2>
+  <textarea id="parser-output">{
+  "shape": "circle",
+  "properties": {
+    "point": { "x": 100, "y": 100 },
+    "radius": 50,
+    "color": "red"
+  }
+}</textarea>
+  <button id="generate-btn">Generate SVG</button>
+  
+  <h2>Test Examples</h2>
+  <button class="test-btn" data-example="circle">Circle Example</button>
+  <button class="test-btn" data-example="rectangle">Rectangle Example</button>
+  <button class="test-btn" data-example="line">Line Example</button>
+  
+  <h2>Generated SVG Code</h2>
+  <div id="svg-code" class="output"></div>
+  
+  <h2>SVG Preview</h2>
+  <div id="svg-preview" class="svg-output"></div>
+  
+  <script src="../generator.js"></script>
+  <script>
+    // Test examples (hard-coded parser output)
+    const examples = {
+      circle: {
+        shape: 'circle',
+        properties: {
+          point: { x: 100, y: 100 },
+          radius: 50,
+          color: 'red'
+        }
+      },
+      rectangle: {
+        shape: 'rectangle',
+        properties: {
+          point: { x: 50, y: 50 },
+          width: 100,
+          height: 80,
+          color: 'blue'
+        }
+      },
+      line: {
+        shape: 'line',
+        properties: {
+          from: { x: 0, y: 0 },
+          to: { x: 200, y: 200 },
+          color: 'green',
+          width: 3
+        }
+      }
+    };
+    
+    // UI event handling
+    document.addEventListener('DOMContentLoaded', function() {
+      const parserOutput = document.getElementById('parser-output');
+      const generateBtn = document.getElementById('generate-btn');
+      const svgCode = document.getElementById('svg-code');
+      const svgPreview = document.getElementById('svg-preview');
+      const testBtns = document.querySelectorAll('.test-btn');
+      
+      function processInput() {
+        try {
+          // Get parsed data from input
+          const parsedData = JSON.parse(parserOutput.value);
+          
+          // Generate SVG
+          const generatedSVG = generateSVG(parsedData);
+          
+          // Display SVG code
+          svgCode.textContent = generatedSVG;
+          svgCode.classList.remove('error');
+          
+          // Display SVG preview
+          svgPreview.innerHTML = generatedSVG;
+        } catch (error) {
+          svgCode.textContent = `Error: ${error.message}`;
+          svgCode.classList.add('error');
+          svgPreview.innerHTML = '';
+        }
+      }
+      
+      generateBtn.addEventListener('click', processInput);
+      
+      testBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const example = this.dataset.example;
+          if (examples[example]) {
+            parserOutput.value = JSON.stringify(examples[example], null, 2);
+            processInput();
+          }
+        });
+      });
+      
+      // Process initial input when page loads
+      processInput();
+    });
+  </script>
+</body>
+</html>
