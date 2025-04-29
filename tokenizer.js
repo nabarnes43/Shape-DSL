@@ -5,9 +5,9 @@
 function tokenize(input) {
     // Regular expressions for different token types
     const patterns = [
-      { type: 'KEYWORD', regex: /^(draw|circle|rectangle|line|at|radius|width|height|color|from|to)/i },
+      { type: 'KEYWORD', regex: /^(draw|circle|rectangle|line|square|at|radius|width|height|color|from|to|size)/i },
       { type: 'NUMBER', regex: /^-?\d+(\.\d+)?/ },
-      { type: 'COLOR', regex: /^(red|green|blue|yellow|black|white|purple|orange|#[0-9a-f]{6})/i },
+      { type: 'COLOR', regex: /^(red|green|blue|yellow|black|white|purple|orange|gray|pink|brown|cyan|#[0-9a-f]{6})/i },
       { type: 'SYMBOL', regex: /^[\(\),]/ },
       { type: 'WHITESPACE', regex: /^\s+/ }
     ];
